@@ -1,11 +1,17 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { WeatherApiResponse } from '../types/weatherapi-response.interface';
 import axios from 'axios';
 
 @Injectable()
 export class WeatherService {
-  private readonly apiKey = process.env.WEATHER_API_KEY;
+  private readonly logger = new Logger(WeatherService.name);
+  private readonly apiKey: string;
   private readonly baseUrl = 'http://api.weatherapi.com/v1';
+
+  constructor(private readonly configService: ConfigService) {
+    this.apiKey = this.configService.get<string>('WEATHER_API_KEY') ?? '';
+  }
 
   async getWeatherByCoordinates(lat: number, lon: number) {
     try {
@@ -35,6 +41,7 @@ export class WeatherService {
         raw: current,
       };
     } catch (error) {
+      this.logger.error(`Failed to fetch weather for ${lat},${lon}: ${error.message}`);
       throw new InternalServerErrorException('Error fetching weather data');
     }
   }

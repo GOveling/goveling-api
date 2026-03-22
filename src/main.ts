@@ -1,16 +1,30 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
+
+  app.use(helmet());
+
   app.enableCors({
-    origin: '*',
+    origin: process.env.CORS_ORIGIN || '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization',
-    credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3000);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    })
+  );
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  logger.log(`Application running on port ${port}`);
 }
 bootstrap();

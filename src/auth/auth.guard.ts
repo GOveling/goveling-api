@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
@@ -8,11 +14,14 @@ export class AuthGuard implements CanActivate {
   private readonly supabaseUrl: string;
   private readonly supabaseApiKey: string;
   private readonly googleClientId: string;
+  private readonly googleClient: OAuth2Client;
+  private readonly logger = new Logger(AuthGuard.name);
 
   constructor(private readonly configService: ConfigService) {
     this.supabaseUrl = this.configService.get<string>('SUPABASE_URL') ?? '';
     this.supabaseApiKey = this.configService.get<string>('SUPABASE_APIKEY') ?? '';
     this.googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID') ?? '';
+    this.googleClient = new OAuth2Client(this.googleClientId);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -57,10 +66,8 @@ export class AuthGuard implements CanActivate {
   }
 
   private async verifyGoogleToken(token: string, request: any): Promise<boolean> {
-    const client = new OAuth2Client();
-
     try {
-      const ticket = await client.verifyIdToken({
+      const ticket = await this.googleClient.verifyIdToken({
         idToken: token,
         audience: this.googleClientId,
       });

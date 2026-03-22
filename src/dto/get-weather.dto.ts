@@ -1,7 +1,7 @@
 import { IsNumber, IsNotEmpty, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class GetLocationDto {
+export class GetWeatherDto {
   @IsNotEmpty()
   @Type(() => Number)
   @IsNumber()

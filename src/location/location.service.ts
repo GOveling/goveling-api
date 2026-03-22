@@ -1,10 +1,12 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { NominatimResponse } from '../types/nominatim-response.interface';
 import axios from 'axios';
 
 @Injectable()
 export class LocationService {
-  async getCityFromCoordinates(lat: number, lng: number): Promise<any> {
+  private readonly logger = new Logger(LocationService.name);
+
+  async getCityFromCoordinates(lat: number, lng: number) {
     try {
       const response = await axios.get<NominatimResponse>(
         'https://nominatim.openstreetmap.org/reverse',
@@ -34,6 +36,7 @@ export class LocationService {
         raw: address,
       };
     } catch (error) {
+      this.logger.error(`Failed to fetch location for ${lat},${lng}: ${error.message}`);
       throw new InternalServerErrorException('Failed to fetch location');
     }
   }

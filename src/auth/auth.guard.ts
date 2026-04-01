@@ -39,7 +39,9 @@ export class AuthGuard implements CanActivate {
 
     // Intento 1: Validar contra Supabase
     try {
-      const response = await axios.get(`https://${this.supabaseUrl}/auth/v1/user`, {
+      // Normalize URL: strip protocol if already present to avoid https://https://...
+      const baseUrl = this.supabaseUrl.replace(/^https?:\/\//, '');
+      const response = await axios.get(`https://${baseUrl}/auth/v1/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
           apikey: this.supabaseApiKey,

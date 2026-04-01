@@ -7,7 +7,7 @@ import axios from 'axios';
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
   private readonly apiKey: string;
-  private readonly baseUrl = 'http://api.weatherapi.com/v1';
+  private readonly baseUrl = 'https://api.weatherapi.com/v1';
 
   constructor(private readonly configService: ConfigService) {
     this.apiKey = this.configService.get<string>('WEATHER_API_KEY') ?? '';

@@ -5,7 +5,7 @@ REST API providing geolocation data (countries, cities, weather, reverse geocodi
 
 - **Framework**: NestJS 11 (TypeScript)
 - **Database**: SQLite3 (`src/Data/CountriesCities/world_geo.db`)
-- **Production**: `https://goveling-api.onrender.com`
+- **Production**: `https://goveling-api-0s0d.onrender.com`
 - **Port**: 3000 (default)
 
 ## Project Structure
